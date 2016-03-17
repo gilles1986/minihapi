@@ -7,13 +7,16 @@ const Hapi = require('hapi');
 const Good = require('good');
 const Hoek = require('hoek');
 
+var defaultConfig = require("./config.js");
+var config = require("./backend/logic/ConfigParser.js")(process, defaultConfig);
+
+// Global variables
+global.log = require("./backend/logic/Logger.js")({verbose: true});
 
 const server = new Hapi.Server();
-server.connection({ port: 3000 });
+server.connection({ port: config.appPort });
 
-
-
-require("./routes.js")(server);
+require("./backend/routes.js")(server);
 
 server.register([require('inert'), require('vision'),{
   register: Good,
@@ -36,7 +39,7 @@ server.register([require('inert'), require('vision'),{
       html: require('handlebars')
     },
     relativeTo: __dirname,
-    path: './views'
+    path: config.templatePath
   });
 
   server.start((err) => {

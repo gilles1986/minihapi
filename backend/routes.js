@@ -13,25 +13,18 @@ module.exports = function(server) {
         require('./action/'+filename+"/")(request, reply, server);
       } catch (e) {
         reply("Action "+filename+" not found");
+        log.warn("Action "+filename+" not found: "+e);
       }
     }
   });
 
-  server.route({
-    method: 'GET',
-    path: '/data/{file}',
-    handler: function (request, reply) {
-      var filename = encodeURIComponent(request.params.file);
-      reply.file('./assets/'+filename);
-    }
-  });
 
   server.route({
     method: 'GET',
     path: '/{file}',
     handler: function (request, reply) {
       var filename = encodeURIComponent(request.params.file);
-      reply.file("./views/"+filename+".html");
+      reply.view(filename);
     }
   });
 
@@ -39,6 +32,7 @@ module.exports = function(server) {
     method: 'GET',
     path: '/',
     handler: function (request, reply) {
+      log.info("Called ROOT");
       var filename = encodeURIComponent(request.params.file);
       reply.redirect("/index");
     }
